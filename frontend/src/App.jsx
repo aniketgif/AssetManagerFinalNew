@@ -10,7 +10,8 @@ function App() {
 
   // Fetch asset status on load
   useEffect(() => {
-    fetch('http://localhost:8000/api/assets')
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+    fetch(`${API_URL}/api/assets`)
       .then(res => res.json())
       .then(data => {
         setAssets(data.assets);

@@ -11,7 +11,8 @@ const AssetSidebar = ({ asset, onClose }) => {
     if (asset) {
       setLoading(true);
       setDelayDays(0);
-      fetch(`http://localhost:8000/api/assets/${asset.asset_id}/history`)
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+      fetch(`${API_URL}/api/assets/${asset.asset_id}/history`)
         .then(res => res.json())
         .then(data => {
           setHistory(data.history);
