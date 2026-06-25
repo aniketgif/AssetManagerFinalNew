@@ -1,0 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-obsidian-900 text-gray-200 m-0 p-0 overflow-hidden font-sans antialiased selection:bg-electric-green selection:text-black;
+  }
+}
+
+/* Custom scrollbar for sleek sidebar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent; 
+}
+::-webkit-scrollbar-thumb {
+  background: #1f1f2e; 
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #00ff9d; 
+}
+
+/* Glassmorphism utility */
+.glass-panel {
+  @apply bg-obsidian-800/60 backdrop-blur-xl border border-white/5 shadow-glass;
+}
