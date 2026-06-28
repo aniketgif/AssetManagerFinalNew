@@ -51,66 +51,65 @@ function App() {
         </div>
 
         {/* 3-Second Rule Metric Overlay */}
-        {!loading && (
-          <div className="glass-panel px-6 py-4 rounded-xl flex gap-8 pointer-events-auto">
-            <div className="flex flex-col">
-              <span className="text-[10px] text-gray-400 uppercase tracking-widest flex items-center gap-1 mb-1">
-                <Activity size={12} /> Monitored Assets
+        <div className="glass-panel px-6 py-4 rounded-xl flex gap-8 pointer-events-auto">
+          <div className="flex flex-col">
+            <span className="text-[10px] text-gray-400 uppercase tracking-widest flex items-center gap-1 mb-1">
+              <Activity size={12} /> Monitored Assets
+            </span>
+            <span className="text-2xl font-mono text-white">
+              {loading ? <span className="animate-pulse text-gray-600">--</span> : assets.length}
+            </span>
+          </div>
+          
+          <div className="w-px bg-white/10"></div>
+          
+          <div className="flex flex-col">
+            <span className="text-[10px] text-alert-red uppercase tracking-widest flex items-center gap-1 mb-1 font-semibold">
+              <ShieldAlert size={12} /> Critical Exceptions
+            </span>
+            <div className="flex items-end gap-2">
+              <span className="text-2xl font-mono text-alert-red">
+                {loading ? <span className="animate-pulse text-gray-600">--</span> : criticalCount}
               </span>
-              <span className="text-2xl font-mono text-white">{assets.length}</span>
-            </div>
-            
-            <div className="w-px bg-white/10"></div>
-            
-            <div className="flex flex-col">
-              <span className="text-[10px] text-alert-red uppercase tracking-widest flex items-center gap-1 mb-1 font-semibold">
-                <ShieldAlert size={12} /> Critical Exceptions
-              </span>
-              <div className="flex items-end gap-2">
-                <span className="text-2xl font-mono text-alert-red">{criticalCount}</span>
-                {warningCount > 0 && <span className="text-sm font-mono text-alert-amber mb-1">/ {warningCount} Warn</span>}
-              </div>
-            </div>
-
-            <div className="w-px bg-white/10"></div>
-
-            <div className="flex flex-col">
-              <span className="text-[10px] text-gray-400 uppercase tracking-widest flex items-center gap-1 mb-1">
-                <DollarSign size={12} /> Total Risk Exposure
-              </span>
-              <span className="text-2xl font-mono text-white">{formattedExposure}</span>
+              {!loading && warningCount > 0 && <span className="text-sm font-mono text-alert-amber mb-1">/ {warningCount} Warn</span>}
             </div>
           </div>
-        )}
+
+          <div className="w-px bg-white/10"></div>
+
+          <div className="flex flex-col">
+            <span className="text-[10px] text-gray-400 uppercase tracking-widest flex items-center gap-1 mb-1">
+              <DollarSign size={12} /> Total Risk Exposure
+            </span>
+            <span className="text-2xl font-mono text-white">
+              {loading ? <span className="animate-pulse text-gray-600">--</span> : formattedExposure}
+            </span>
+          </div>
+        </div>
       </div>
 
       {/* Main 3D Globe */}
-      {!loading && (
-        <Suspense fallback={
-          <div className="absolute inset-0 flex items-center justify-center bg-obsidian-900 z-10">
-            <div className="flex flex-col items-center gap-4">
-              <div className="w-12 h-12 border-t-2 border-electric-green rounded-full animate-spin"></div>
-              <div className="text-gray-400 text-sm tracking-widest uppercase">Loading 3D Visualizer...</div>
-            </div>
-          </div>
-        }>
-          <GlobeView 
-            assets={assets} 
-            onSelectAsset={(asset) => setSelectedAsset(asset)} 
-          />
-        </Suspense>
-      )}
-
-      {/* Loading Overlay */}
-      {loading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-obsidian-900 z-20">
+      <Suspense fallback={
+        <div className="absolute inset-0 flex items-center justify-center bg-obsidian-900 z-10">
           <div className="flex flex-col items-center gap-4">
             <div className="w-12 h-12 border-t-2 border-electric-green rounded-full animate-spin"></div>
-            <div className="text-gray-400 text-sm tracking-widest uppercase">Initializing Telemetry...</div>
+            <div className="text-gray-400 text-sm tracking-widest uppercase">Loading 3D Visualizer...</div>
           </div>
         </div>
-      )}
+      }>
+        <GlobeView 
+          assets={assets} 
+          onSelectAsset={(asset) => setSelectedAsset(asset)} 
+        />
+      </Suspense>
 
+      {/* Non-blocking API Loading Indicator */}
+      {loading && (
+        <div className="absolute bottom-6 right-6 z-20 glass-panel px-4 py-3 rounded flex items-center gap-3 animate-pulse">
+          <div className="w-4 h-4 border-t-2 border-electric-green rounded-full animate-spin"></div>
+          <span className="text-[10px] text-gray-400 uppercase tracking-widest">Fetching Telemetry...</span>
+        </div>
+      )}
       {/* Sidebar for details */}
       <AssetSidebar 
         asset={selectedAsset} 
