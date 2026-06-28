@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import GlobeView from './components/GlobeView';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import AssetSidebar from './components/AssetSidebar';
 import { ShieldAlert, Activity, DollarSign } from 'lucide-react';
+
+const GlobeView = lazy(() => import('./components/GlobeView'));
 
 function App() {
   const [assets, setAssets] = useState([]);
@@ -85,10 +86,19 @@ function App() {
 
       {/* Main 3D Globe */}
       {!loading && (
-        <GlobeView 
-          assets={assets} 
-          onSelectAsset={(asset) => setSelectedAsset(asset)} 
-        />
+        <Suspense fallback={
+          <div className="absolute inset-0 flex items-center justify-center bg-obsidian-900 z-10">
+            <div className="flex flex-col items-center gap-4">
+              <div className="w-12 h-12 border-t-2 border-electric-green rounded-full animate-spin"></div>
+              <div className="text-gray-400 text-sm tracking-widest uppercase">Loading 3D Visualizer...</div>
+            </div>
+          </div>
+        }>
+          <GlobeView 
+            assets={assets} 
+            onSelectAsset={(asset) => setSelectedAsset(asset)} 
+          />
+        </Suspense>
       )}
 
       {/* Loading Overlay */}

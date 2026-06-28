@@ -46,6 +46,18 @@ const GlobeView = ({ assets, onSelectAsset }) => {
     assetData: asset
   }));
 
+  const ringsData = assets.map(asset => ({
+    lat: asset.latitude,
+    lng: asset.longitude,
+    color: asset.risk_status === 'Red' ? (t) => `rgba(239, 68, 68, ${1-t})` 
+         : asset.risk_status === 'Yellow' ? (t) => `rgba(245, 158, 11, ${1-t})` 
+         : (t) => `rgba(16, 185, 129, ${1-t})`,
+    maxR: asset.risk_status === 'Red' ? 12 : asset.risk_status === 'Yellow' ? 7 : 4,
+    propagationSpeed: asset.risk_status === 'Red' ? 5 : asset.risk_status === 'Yellow' ? 2 : 1,
+    repeatPeriod: asset.risk_status === 'Red' ? 600 : asset.risk_status === 'Yellow' ? 1200 : 2500,
+  }));
+
+
   return (
     <div className="absolute inset-0 cursor-move">
       <Globe
@@ -67,6 +79,11 @@ const GlobeView = ({ assets, onSelectAsset }) => {
         labelDotRadius={0.3}
         labelColor={() => 'white'}
         labelResolution={2}
+        ringsData={ringsData}
+        ringColor="color"
+        ringMaxRadius="maxR"
+        ringPropagationSpeed="propagationSpeed"
+        ringRepeatPeriod="repeatPeriod"
         onPointClick={(point) => onSelectAsset(point.assetData)}
         onLabelClick={(label) => onSelectAsset(label.assetData)}
       />
