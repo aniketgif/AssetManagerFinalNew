@@ -16,13 +16,13 @@ app.add_middleware(
 )
 
 DB_PATH = "sqlite:///assets.db"
+engine = create_engine(DB_PATH)
 
 @app.get("/api/assets")
 def get_assets():
     """
     Returns the latest status, coordinates, Risk Score, and RUL of all 15 global assets.
     """
-    engine = create_engine(DB_PATH)
     try:
         df = pd.read_sql("SELECT * FROM asset_status", con=engine)
         # Convert to list of dicts
@@ -36,7 +36,6 @@ def get_asset_history(asset_id: str):
     """
     Returns the last 30 days (or equivalent recent rows) of real time-series sensor data for a specific asset.
     """
-    engine = create_engine(DB_PATH)
     try:
         # Fetch data for the specific asset, ordered by timestamp descending
         query = f"""

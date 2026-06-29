@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense, lazy } from 'react';
+import React, { useState, useEffect, Suspense, lazy, useMemo } from 'react';
 import AssetSidebar from './components/AssetSidebar';
 import { ShieldAlert, Activity, DollarSign } from 'lucide-react';
 
@@ -25,17 +25,17 @@ function App() {
   }, []);
 
   // Compute Network Metrics for the HUD (3-Second Rule)
-  const exceptions = assets.filter(a => a.risk_status === 'Red' || a.risk_status === 'Yellow');
-  const criticalCount = assets.filter(a => a.risk_status === 'Red').length;
-  const warningCount = assets.filter(a => a.risk_status === 'Yellow').length;
+  const exceptions = useMemo(() => assets.filter(a => a.risk_status === 'Red' || a.risk_status === 'Yellow'), [assets]);
+  const criticalCount = useMemo(() => assets.filter(a => a.risk_status === 'Red').length, [assets]);
+  const warningCount = useMemo(() => assets.filter(a => a.risk_status === 'Yellow').length, [assets]);
   
   // Total Risk Exposure Calculation: 
   // Unplanned Cost ($2.55M) * Average Risk Probability of Exceptions
-  const avgRisk = exceptions.length > 0 
+  const avgRisk = useMemo(() => exceptions.length > 0 
     ? exceptions.reduce((acc, a) => acc + (a.risk_score / 100), 0) / exceptions.length 
-    : 0;
-  const totalRiskExposure = exceptions.length * 2550000 * avgRisk;
-  const formattedExposure = `$${(totalRiskExposure / 1000000).toFixed(1)}M`;
+    : 0, [exceptions]);
+  const totalRiskExposure = useMemo(() => exceptions.length * 2550000 * avgRisk, [exceptions, avgRisk]);
+  const formattedExposure = useMemo(() => `$${(totalRiskExposure / 1000000).toFixed(1)}M`, [totalRiskExposure]);
 
   return (
     <div className="w-screen h-screen bg-obsidian-900 overflow-hidden relative font-sans">

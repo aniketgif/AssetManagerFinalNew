@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 import { X, SlidersHorizontal, AlertTriangle, Crosshair, ChevronRight } from 'lucide-react';
 
@@ -28,26 +28,26 @@ const AssetSidebar = ({ asset, onClose }) => {
   if (!asset) return null;
 
   // The Big 'D' is Decisions: Simulation Logic
-  const baseRisk = asset.risk_score / 100;
+  const baseRisk = useMemo(() => asset.risk_score / 100, [asset.risk_score]);
   
   // What-If logic: Each day of delay increases the probability of catastrophic failure by 3%
-  const simulatedRisk = Math.min(1.0, baseRisk + (delayDays * 0.03));
+  const simulatedRisk = useMemo(() => Math.min(1.0, baseRisk + (delayDays * 0.03)), [baseRisk, delayDays]);
   
   const unplannedCost = 2550000;
   const plannedCost = 30000;
   
   // Active Exploration: Dynamic cost modeling
-  const baselineSavings = (unplannedCost * baseRisk) - plannedCost;
-  const simulatedSavings = (unplannedCost * simulatedRisk) - plannedCost;
+  const baselineSavings = useMemo(() => (unplannedCost * baseRisk) - plannedCost, [baseRisk]);
+  const simulatedSavings = useMemo(() => (unplannedCost * simulatedRisk) - plannedCost, [simulatedRisk]);
   
   // Negative Externality of the delay decision
-  const costOfInaction = simulatedSavings - baselineSavings;
+  const costOfInaction = useMemo(() => simulatedSavings - baselineSavings, [simulatedSavings, baselineSavings]);
 
-  const isAtRisk = asset.risk_status === 'Yellow' || asset.risk_status === 'Red';
+  const isAtRisk = useMemo(() => asset.risk_status === 'Yellow' || asset.risk_status === 'Red', [asset.risk_status]);
   
   // Functional Styling logic
-  const statusColor = asset.risk_status === 'Red' ? 'text-alert-red' : asset.risk_status === 'Yellow' ? 'text-alert-amber' : 'text-electric-green';
-  const statusBorder = asset.risk_status === 'Red' ? 'border-alert-red' : asset.risk_status === 'Yellow' ? 'border-alert-amber' : 'border-electric-green';
+  const statusColor = useMemo(() => asset.risk_status === 'Red' ? 'text-alert-red' : asset.risk_status === 'Yellow' ? 'text-alert-amber' : 'text-electric-green', [asset.risk_status]);
+  const statusBorder = useMemo(() => asset.risk_status === 'Red' ? 'border-alert-red' : asset.risk_status === 'Yellow' ? 'border-alert-amber' : 'border-electric-green', [asset.risk_status]);
 
   return (
     <div className={`fixed top-0 right-0 h-full w-[450px] glass-panel transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${asset ? 'translate-x-0' : 'translate-x-full'} overflow-y-auto z-50 flex flex-col border-l border-white/10`}>

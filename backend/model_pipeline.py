@@ -66,7 +66,7 @@ def run_model_pipeline():
     df_history["rul"] = df_history["risk_score"].apply(estimate_rul)
     
     # Save predictions back to sensor_data
-    df_history.to_sql("sensor_data", con=engine, if_exists="replace", index=False)
+    df_history.to_sql("sensor_data", con=engine, if_exists="replace", index=False, chunksize=1000, method="multi")
     
     # Update the asset_status table with the latest predicted rows
     latest_status = df_history.groupby("asset_id").last().reset_index()

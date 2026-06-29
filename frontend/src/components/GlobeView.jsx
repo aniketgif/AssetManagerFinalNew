@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useMemo } from 'react';
 import Globe from 'react-globe.gl';
 
 const GlobeView = ({ assets, onSelectAsset }) => {
@@ -8,16 +8,23 @@ const GlobeView = ({ assets, onSelectAsset }) => {
     height: window.innerHeight
   });
 
-  // Handle window resize
+  // Handle window resize with debounce
   useEffect(() => {
+    let timeoutId = null;
     const handleResize = () => {
-      setDimensions({
-        width: window.innerWidth,
-        height: window.innerHeight
-      });
+      if (timeoutId) clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        setDimensions({
+          width: window.innerWidth,
+          height: window.innerHeight
+        });
+      }, 150);
     };
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      if (timeoutId) clearTimeout(timeoutId);
+    };
   }, []);
 
   // Set initial camera position
@@ -37,16 +44,16 @@ const GlobeView = ({ assets, onSelectAsset }) => {
     }
   };
 
-  const markers = assets.map(asset => ({
+  const markers = useMemo(() => assets.map(asset => ({
     lat: asset.latitude,
     lng: asset.longitude,
     size: asset.risk_status === 'Red' ? 1.5 : 1,
     color: getMarkerColor(asset.risk_status),
     label: asset.asset_id,
     assetData: asset
-  }));
+  })), [assets]);
 
-  const ringsData = assets.map(asset => ({
+  const ringsData = useMemo(() => assets.map(asset => ({
     lat: asset.latitude,
     lng: asset.longitude,
     color: asset.risk_status === 'Red' ? (t) => `rgba(239, 68, 68, ${1-t})` 
@@ -55,7 +62,7 @@ const GlobeView = ({ assets, onSelectAsset }) => {
     maxR: asset.risk_status === 'Red' ? 12 : asset.risk_status === 'Yellow' ? 7 : 4,
     propagationSpeed: asset.risk_status === 'Red' ? 5 : asset.risk_status === 'Yellow' ? 2 : 1,
     repeatPeriod: asset.risk_status === 'Red' ? 600 : asset.risk_status === 'Yellow' ? 1200 : 2500,
-  }));
+  })), [assets]);
 
 
   return (
@@ -91,4 +98,4 @@ const GlobeView = ({ assets, onSelectAsset }) => {
   );
 };
 
-export default GlobeView;
+export default React.memo(GlobeView);

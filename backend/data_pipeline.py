@@ -87,11 +87,16 @@ def run_pipeline():
     engine = create_engine(db_path)
     
     # Save the time series history
-    final_df.to_sql("sensor_data", con=engine, if_exists="replace", index=False)
+    final_df.to_sql("sensor_data", con=engine, if_exists="replace", index=False, chunksize=1000, method="multi")
     
     # Save a separate table for latest asset status to simplify API reads
     latest_status = final_df.groupby("asset_id").last().reset_index()
     latest_status.to_sql("asset_status", con=engine, if_exists="replace", index=False)
+    
+    # Create indexes to speed up future queries
+    with engine.connect() as conn:
+        conn.execute(pd.io.sql.text("CREATE INDEX IF NOT EXISTS idx_sensor_data_asset ON sensor_data (asset_id)"))
+        conn.execute(pd.io.sql.text("CREATE INDEX IF NOT EXISTS idx_sensor_data_time ON sensor_data (timestamp)"))
     
     print("Pipeline completed successfully! Saved to assets.db.")
 
