@@ -77,6 +77,14 @@ def run_pipeline():
         if "timestamp" not in asset_df.columns:
             asset_df["timestamp"] = pd.date_range(start=f"2023-01-01", periods=len(asset_df), freq="10min")
             
+        # --- Sabotage for Demo Purposes ---
+        if i == 2 or i == 5:
+            # Asset 2 -> Red (huge spikes), Asset 5 -> Yellow (moderate spikes)
+            multiplier = 5.0 if i == 2 else 2.5
+            for col in numeric_cols[:2]: # Grab the first two numeric columns
+                asset_df.iloc[-50:, asset_df.columns.get_loc(col)] *= np.linspace(1, multiplier, 50)
+                asset_df.iloc[-50:, asset_df.columns.get_loc(col)] += np.random.normal(0, multiplier, 50)
+                
         chunks.append(asset_df)
     
     final_df = pd.concat(chunks, ignore_index=True)
