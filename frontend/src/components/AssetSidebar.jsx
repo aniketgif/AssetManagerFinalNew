@@ -156,9 +156,12 @@ const AssetSidebar = ({ asset, onClose }) => {
               </div>
             </div>
 
-            <button className="w-full mt-6 bg-electric-green hover:bg-[#00e68d] text-obsidian-900 font-bold text-sm py-3 px-4 rounded transition-colors flex items-center justify-center gap-2 tracking-wide">
-              DISPATCH CREW NOW <ChevronRight size={16} />
-            </button>
+            <div className="w-full mt-6 bg-obsidian-800 border-l-4 border-electric-green p-4 rounded-r">
+              <span className="text-[10px] text-gray-400 uppercase tracking-widest block mb-1">System Recommendation</span>
+              <div className="text-electric-green font-bold text-sm tracking-wide flex items-center gap-2">
+                <AlertTriangle size={16} /> DISPATCH CREW NOW
+              </div>
+            </div>
           </section>
         )}
 
