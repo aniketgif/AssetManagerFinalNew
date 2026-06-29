@@ -29,3 +29,13 @@
 .glass-panel {
   @apply bg-obsidian-800/60 backdrop-blur-xl border border-white/5 shadow-glass;
 }
+
+/* Indeterminate Loading Bar Animation */
+@keyframes indeterminate {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(300%); }
+}
+
+.animate-indeterminate {
+  animation: indeterminate 1.5s infinite linear;
+}

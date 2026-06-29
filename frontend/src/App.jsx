@@ -105,9 +105,14 @@ function App() {
 
       {/* Non-blocking API Loading Indicator */}
       {loading && (
-        <div className="absolute bottom-6 right-6 z-20 glass-panel px-4 py-3 rounded flex items-center gap-3 animate-pulse">
-          <div className="w-4 h-4 border-t-2 border-electric-green rounded-full animate-spin"></div>
-          <span className="text-[10px] text-gray-400 uppercase tracking-widest">Fetching Telemetry...</span>
+        <div className="absolute bottom-6 right-6 z-20 glass-panel px-5 py-4 rounded-lg flex flex-col gap-3 min-w-[220px]">
+          <div className="flex items-center gap-3">
+            <div className="w-4 h-4 border-t-2 border-electric-green rounded-full animate-spin"></div>
+            <span className="text-[10px] text-gray-400 uppercase tracking-widest">Fetching Telemetry...</span>
+          </div>
+          <div className="w-full bg-obsidian-900 rounded-full h-1 overflow-hidden relative border border-white/5">
+            <div className="absolute top-0 left-0 h-full bg-electric-green w-1/3 rounded-full animate-indeterminate shadow-[0_0_8px_#00ff9d]"></div>
+          </div>
         </div>
       )}
       {/* Sidebar for details */}
