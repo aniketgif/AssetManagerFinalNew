@@ -44,25 +44,6 @@ const GlobeView = ({ assets, onSelectAsset }) => {
     }
   };
 
-  const markers = useMemo(() => assets.map(asset => ({
-    lat: asset.latitude,
-    lng: asset.longitude,
-    size: asset.risk_status === 'Red' ? 1.5 : 1,
-    color: getMarkerColor(asset.risk_status),
-    label: asset.asset_id,
-    assetData: asset
-  })), [assets]);
-
-  const ringsData = useMemo(() => assets.map(asset => ({
-    lat: asset.latitude,
-    lng: asset.longitude,
-    color: asset.risk_status === 'Red' ? (t) => `rgba(239, 68, 68, ${1-t})` 
-         : asset.risk_status === 'Yellow' ? (t) => `rgba(245, 158, 11, ${1-t})` 
-         : (t) => `rgba(16, 185, 129, ${1-t})`,
-    maxR: asset.risk_status === 'Red' ? 12 : asset.risk_status === 'Yellow' ? 7 : 4,
-    propagationSpeed: asset.risk_status === 'Red' ? 5 : asset.risk_status === 'Yellow' ? 2 : 1,
-    repeatPeriod: asset.risk_status === 'Red' ? 600 : asset.risk_status === 'Yellow' ? 1200 : 2500,
-  })), [assets]);
 
 
   return (
@@ -71,28 +52,42 @@ const GlobeView = ({ assets, onSelectAsset }) => {
         ref={globeEl}
         width={dimensions.width}
         height={dimensions.height}
-        globeImageUrl="//unpkg.com/three-globe/example/img/earth-dark.jpg"
-        backgroundImageUrl="//unpkg.com/three-globe/example/img/night-sky.png"
-        pointsData={markers}
-        pointAltitude="size"
-        pointColor="color"
-        pointRadius={0.5}
-        pointResolution={32}
-        labelsData={markers}
-        labelLat={d => d.lat}
-        labelLng={d => d.lng}
-        labelText={d => d.label}
-        labelSize={1.2}
-        labelDotRadius={0.3}
-        labelColor={() => 'white'}
-        labelResolution={2}
-        ringsData={ringsData}
-        ringColor="color"
-        ringMaxRadius="maxR"
-        ringPropagationSpeed="propagationSpeed"
-        ringRepeatPeriod="repeatPeriod"
-        onPointClick={(point) => onSelectAsset(point.assetData)}
-        onLabelClick={(label) => onSelectAsset(label.assetData)}
+        globeImageUrl="//unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
+        htmlElementsData={assets}
+        htmlElement={d => {
+          const el = document.createElement('div');
+          const color = getMarkerColor(d.risk_status);
+          el.innerHTML = `
+            <div style="position: relative; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+              <div style="
+                width: 14px; 
+                height: 14px; 
+                background: ${color}; 
+                border: 2px solid rgba(255,255,255,0.8); 
+                border-radius: 50%; 
+                box-shadow: 0 0 12px ${color};
+                transition: transform 0.2s;
+              " onmouseover="this.style.transform='scale(1.3)'" onmouseout="this.style.transform='scale(1)'">
+              </div>
+              <div style="
+                position: absolute;
+                left: 20px;
+                background: rgba(15, 23, 42, 0.85);
+                color: white;
+                padding: 4px 8px;
+                border-radius: 4px;
+                font-family: monospace;
+                font-size: 11px;
+                pointer-events: none;
+                white-space: nowrap;
+                backdrop-filter: blur(4px);
+                border: 1px solid rgba(255,255,255,0.1);
+              ">${d.asset_id}</div>
+            </div>
+          `;
+          el.onclick = () => onSelectAsset(d);
+          return el;
+        }}
       />
     </div>
   );
